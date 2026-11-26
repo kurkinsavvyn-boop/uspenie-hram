@@ -15,13 +15,15 @@ const calDays = JSON.stringify(calendar.days);
 
 <Base description="Официальный сайт храма Успения Пресвятой Богородицы в посёлке Челюскинский. Расписание богослужений, новости прихода, таинства и требы, воскресная школа.">
   <section class="hero-row">
-    <div class="hero-left">
+    <div class="hero-head">
       <p class="over">
         <span>Сергиево-Посадская епархия</span><i> · </i><span>Ивантеевское благочиние</span>
       </p>
       <h1>Храм Успения Пресвятой Богородицы</h1>
       <p class="sub">в Челюскинском</p>
+    </div>
 
+    <div class="hero-service">
       <Fragment set:html={ornHtml} />
 
       <section class="vA" id="svc">

@@ -415,3 +415,22 @@
 
 /* На телефоне убираем тяжёлый drop-shadow у акварели (риск GPU-краша на слабых устройствах) */
 @media (max-width: 899px) { .hero-pic img { filter: none; } }
+
+/* Мобильный порядок hero: заголовок → картинка → «Ближайшая служба» (как в референсе) */
+.hero-row { grid-template-columns: 1fr; grid-template-areas: "head" "pic" "service"; }
+.hero-head { grid-area: head; min-width: 0; }
+.hero-pic { grid-area: pic; }
+.hero-service { grid-area: service; }
+.hero-head h1 { font-size: clamp(27px, 3.4vw, 50px); line-height: 1.12; letter-spacing: .01em; }
+.hero-head .sub { margin-bottom: clamp(16px, 2.6vw, 30px); }
+.hero-service .vA { max-width: none; margin: 0; padding: clamp(14px, 2.5vw, 28px) 0 0; }
+.hero-service .vA h2 { text-align: left; }
+.hero-service .vA-day { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: baseline; gap: 6px 20px; text-align: left; }
+.hero-service .vA li { justify-content: flex-start; }
+.hero-service .vA .acts { justify-content: flex-start; flex-wrap: wrap; }
+.hero-service .orn { padding: 0; margin: clamp(10px, 2vw, 20px) 0 clamp(6px, 1.5vw, 12px); }
+.hero-service .orn .ln { display: none; }
+.hero-service .orn .mid { width: 100%; max-width: 400px; display: block; }
+@media (min-width: 900px) {
+  .hero-row { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); grid-template-areas: "head pic" "service pic"; }
+}
