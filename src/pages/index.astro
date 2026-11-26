@@ -43,7 +43,10 @@ const calDays = JSON.stringify(calendar.days);
     </div>
 
     <figure class="hero-pic">
-      <img src="/images/hram-watercolor.webp" alt="Храм Успения Пресвятой Богородицы в Челюскинском — акварель" width="1280" height="1229" fetchpriority="high" />
+      <div class="drawing" id="hram-draw">
+        <canvas class="cv" aria-hidden="true"></canvas>
+        <img class="fin" src="/images/hram-watercolor.webp" alt="Храм Успения Пресвятой Богородицы в Челюскинском — акварель" width="1280" height="1229" fetchpriority="high" />
+      </div>
     </figure>
   </section>
 
@@ -92,7 +95,8 @@ const calDays = JSON.stringify(calendar.days);
       <div class="htxt">
         <i class="qsp" aria-hidden="true"></i>
         <figure class="quote" id="quote">
-          <img class="fin" src="/images/ornaments/zaamvonnaya-ink.webp" alt="Освяти любящия благолепие дому Твоего, Ты тех воспрослави Божественною Твоею силою. Заамвонная молитва." width="1100" height="795" loading="lazy" decoding="async" />
+          <canvas class="cv" aria-hidden="true"></canvas>
+          <img class="fin" src="/images/ornaments/zaamvonnaya-ink.webp" alt="Освяти любящия благолепие дому Твоего, Ты тех воспрослави Божественною Твоею силою. Заамвонная молитва." width="1100" height="795" decoding="async" />
         </figure>
         <p>Перевести пожертвование можно по реквизитам, по QR-коду в приложении банка или оставить в церковной лавке. Приход всегда рад и помощи делом.</p>
       </div>
@@ -148,5 +152,109 @@ const calDays = JSON.stringify(calendar.days);
     const f = el.querySelector('.vA-f');
     if (f) f.textContent = ev.feast || '';
     el.querySelector('ul').innerHTML = '<li><time>' + s[0] + '</time><span>' + s[1] + '</span></li>';
+  })();
+</script>
+
+<script>
+  // Прорисовывание акварели храма: мягкая кисть слева направо, потом проявляется оригинал
+  (function () {
+    const box = document.getElementById('hram-draw');
+    if (!box) return;
+    const cv = box.querySelector('.cv'), fin = box.querySelector('.fin');
+    const done = () => { box.classList.add('done'); if (fin) fin.style.opacity = 1; };
+    if (!cv || !fin || !cv.getContext || matchMedia('(prefers-reduced-motion: reduce)').matches) { done(); return; }
+    const load = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+    load(fin.getAttribute('src')).then(run).catch(done);
+    function run(img) {
+      if (!img.naturalWidth) { done(); return; }
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const W = Math.max(1, Math.round(box.clientWidth * dpr));
+      const H = Math.max(1, Math.round(W * img.naturalHeight / img.naturalWidth));
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+      const imgC = mk(W, H), mask = mk(W, H);
+      const ic = imgC.getContext('2d'), mc = mask.getContext('2d');
+      ic.drawImage(img, 0, 0, W, H);
+      const R = Math.max(12, W / 18);
+      let t0 = null; const DUR = 2.8;
+      fin.style.transition = 'opacity 1s ease';
+      fin.style.opacity = 0;
+      function frame(ts) {
+        if (t0 === null) t0 = ts;
+        const s = Math.min(1, (ts - t0) / 1000 / DUR);
+        const x = s * (W + R);
+        mc.clearRect(0, 0, W, H);
+        if (x > R) { mc.fillStyle = '#000'; mc.fillRect(0, 0, x - R, H); }
+        if (x > 0) {
+          const g = mc.createLinearGradient(x - R, 0, x, 0);
+          g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+          mc.fillStyle = g; mc.fillRect(Math.max(0, x - R), 0, R, H);
+        }
+        ctx.clearRect(0, 0, W, H);
+        ctx.drawImage(imgC, 0, 0);
+        ctx.globalCompositeOperation = 'destination-in';
+        ctx.drawImage(mask, 0, 0);
+        ctx.globalCompositeOperation = 'source-over';
+        if (s < 1) requestAnimationFrame(frame); else done();
+      }
+      requestAnimationFrame(frame);
+    }
+  })();
+</script>
+
+<script>
+  // Прорисовывание каллиграфии «Заамвонная молитва» — строки «прописываются» кистью
+  (function () {
+    const fig = document.getElementById('quote');
+    if (!fig) return;
+    const cv = fig.querySelector('.cv'), fin = fig.querySelector('.fin');
+    const done = () => { fig.classList.add('done'); if (fin) fin.style.opacity = 1; };
+    if (!cv || !fin || !cv.getContext || matchMedia('(prefers-reduced-motion: reduce)').matches) { done(); return; }
+    const IW = 1100, IH = 795, SPEED = 1150, GAP = 0.12;
+    const LINES = [[95, 262, 150, 975], [250, 355, 105, 995], [348, 455, 90, 930], [448, 565, 40, 1055], [575, 670, 15, 1095]];
+    const load = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+    const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+    load(fin.getAttribute('src')).then(run).catch(done);
+    function run(img) {
+      if (!img.naturalWidth) { done(); return; }
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const W = Math.max(1, Math.round(fig.clientWidth * dpr)), H = Math.round(W * IH / IW), k = W / IW;
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      const mask = mk(W, H), L = mk(W, H);
+      const mctx = mask.getContext('2d'), lctx = L.getContext('2d');
+      let t0 = null, END = 0.3, t = 0.15;
+      const plan = [];
+      LINES.forEach((l) => { const d = (l[3] - l[2]) / SPEED; plan.push({ l, s: t, d, x: l[2] }); t += d + GAP; });
+      END = t;
+      fin.style.transition = 'opacity .9s ease';
+      fin.style.opacity = 0;
+      function dab(x, y, r) {
+        const g = mctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(0.62, 'rgba(0,0,0,.85)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+        mctx.fillStyle = g; mctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+      }
+      function frame(ts) {
+        if (t0 === null) t0 = ts;
+        const s = (ts - t0) / 1000;
+        plan.forEach((q) => {
+          if (s < q.s) return;
+          const l = q.l, to = l[2] + (l[3] - l[2]) * Math.min(1, (s - q.s) / q.d);
+          const r = (l[1] - l[0]) * 0.56 * k, cy = (l[0] + l[1]) / 2 * k;
+          for (let x = q.x; x <= to; x += r / (3 * k)) dab(x * k, cy + Math.sin(x * 0.05) * 3 * k, r);
+          q.x = Math.max(q.x, to);
+        });
+        lctx.clearRect(0, 0, W, H);
+        lctx.globalCompositeOperation = 'source-over';
+        lctx.drawImage(img, 0, 0, W, H);
+        lctx.globalCompositeOperation = 'destination-in';
+        lctx.drawImage(mask, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+        ctx.drawImage(L, 0, 0);
+        if (s < END + 0.1) requestAnimationFrame(frame); else done();
+      }
+      requestAnimationFrame(frame);
+    }
   })();
 </script>
