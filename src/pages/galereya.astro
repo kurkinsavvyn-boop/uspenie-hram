@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const galleryDir = path.join(process.cwd(), 'public', 'images', 'gallery');
+const photos = fs.existsSync(galleryDir)
+  ? fs.readdirSync(galleryDir).filter((f) => /\.(jpg|jpeg|png|webp)$/i.test(f)).sort()
+  : [];
+---
+
+<Base title="Галерея — Храм Успения Пресвятой Богородицы в Челюскинском" description="Фотографии жизни прихода храма Успения Пресвятой Богородицы в Челюскинском.">
+  <section class="page">
+    <div class="wrap">
+      <div class="page-head">
+        <span class="kicker">О храме</span>
+        <h1>Галерея</h1>
+        <p class="lead">Богослужения и события прихода в фотографиях.</p>
+      </div>
+
+      <div class="gallery">
+        {photos.map((p) => (
+          <figure>
+            <img src={`/images/gallery/${p}`} alt="Фото жизни прихода" loading="lazy" />
+          </figure>
+        ))}
+      </div>
+      <p class="form-note" style="margin-top:18px">Фотографии из архива прихода. Новые фото добавляются через админку сайта.</p>
+    </div>
+  </section>
+</Base>

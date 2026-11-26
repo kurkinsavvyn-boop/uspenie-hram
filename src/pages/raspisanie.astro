@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+import ornHtml from '../components/orn.html?raw';
+import calendar from '../data/calendar.json';
+
+const days = calendar.days;
+---
+
+<Base title="Расписание — Храм Успения Пресвятой Богородицы в Челюскинском" description="Расписание богослужений по дням, ноябрь 2026.">
+  <div class="split">
+    <aside class="split-l">
+      <section class="phead">
+        <h1>Расписание богослужений</h1>
+      </section>
+      <Fragment set:html={ornHtml} />
+      <div class="side">
+        <div class="months" role="tablist" aria-label="Месяц">
+          <button role="tab" aria-selected="true">Ноябрь 2026</button>
+          <button role="tab" aria-selected="false" disabled title="Появится в конце ноября">Декабрь</button>
+        </div>
+        <p class="legend"><span class="k-sun">воскресные службы</span><span class="k-wd">будничные</span></p>
+      </div>
+    </aside>
+    <div class="split-r">
+      <section class="list">
+        <button class="cal-prev" id="show-prev" type="button" hidden>↑ Показать предыдущие дни</button>
+        <ol class="cal" id="cal">
+          {days.map((d) => (
+            <li class={d.sun ? 'sun' : ''} data-day={d.day}>
+              <p class="dd"><b>{d.day}</b>{d.wd}</p>
+              <div>
+                {d.events.map((ev) => (
+                  <div class={ev.vig ? 'ev vig' : 'ev'}>
+                    {ev.feast && <p class="feast">{ev.feast}</p>}
+                    {ev.services.map((s) => <p class="sv"><time>{s[0]}</time><span>{s[1]}</span></p>)}
+                    {ev.mark && <p class="mark">{ev.mark}</p>}
+                  </div>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+      <p class="note">Записки на литургию подают до её начала у свечного ящика.</p>
+      <div class="acts">
+        <a class="btn solid" href="/zapiski/">Подать записку</a>
+        <a class="btn" href="/kontakty/">Как добраться</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Открываем расписание с сегодняшнего дня; прошлые дни скрыты до нажатия кнопки
+    (function () {
+      const cal = document.getElementById('cal');
+      const btn = document.getElementById('show-prev');
+      if (!cal || !btn) return;
+      const msk = new Date(Date.now() + 3 * 3600e3);
+      const Y = msk.getUTCFullYear(), M = msk.getUTCMonth() + 1, D = msk.getUTCDate();
+      if (Y !== 2026 || M !== 11) return;
+      const items = Array.from(cal.querySelectorAll('li[data-day]'));
+      const past = items.filter((li) => +li.dataset.day < D);
+      const today = items.find((li) => +li.dataset.day === D);
+      if (past.length) { past.forEach((li) => li.classList.add('is-past')); btn.hidden = false; }
+      if (today) {
+        today.classList.add('is-today');
+        const dd = today.querySelector('.dd');
+        if (dd) dd.insertAdjacentHTML('beforeend', '<em>сегодня</em>');
+      }
+      btn.addEventListener('click', () => { past.forEach((li) => li.classList.remove('is-past')); btn.hidden = true; });
+    })();
+  </script>
+</Base>

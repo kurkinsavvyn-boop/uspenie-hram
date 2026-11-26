@@ -1,0 +1,150 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../data/site.json';
+import calendar from '../data/calendar.json';
+import { getCollection } from 'astro:content';
+import ornHtml from '../components/orn.html?raw';
+
+const news = (await getCollection('news'))
+  .sort((a, b) => b.data.date - a.data.date)
+  .slice(0, 3);
+
+const fmt = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' });
+const calDays = JSON.stringify(calendar.days);
+---
+
+<Base description="Официальный сайт храма Успения Пресвятой Богородицы в посёлке Челюскинский. Расписание богослужений, новости прихода, таинства и требы, воскресная школа.">
+  <section class="hero-row">
+    <div class="hero-left">
+      <p class="over">
+        <span>Сергиево-Посадская епархия</span><i> · </i><span>Ивантеевское благочиние</span>
+      </p>
+      <h1>Храм Успения Пресвятой Богородицы</h1>
+      <p class="sub">в Челюскинском</p>
+
+      <Fragment set:html={ornHtml} />
+
+      <section class="vA" id="svc">
+        <h2>Ближайшая служба</h2>
+        <div id="svc-day" class="vA-day wd">
+          <p class="vA-date"><b>—</b><span class="vA-wd"></span></p>
+          <div>
+            <p class="vA-f" id="svc-feast"></p>
+            <ul><li><time>—</time><span>—</span></li></ul>
+          </div>
+        </div>
+        <div class="acts">
+          <a class="btn solid" href="/zapiski/">Подать записку</a>
+          <a class="btn" href="/raspisanie/">Всё расписание</a>
+        </div>
+      </section>
+    </div>
+
+    <figure class="hero-pic">
+      <img src="/images/hram-watercolor.webp" alt="Храм Успения Пресвятой Богородицы в Челюскинском — акварель" width="1280" height="1229" fetchpriority="high" />
+    </figure>
+  </section>
+
+  <section class="news" id="news">
+    <div class="sec-h">
+      <h2><a href="/novosti/">Новости</a></h2>
+      <a class="more" href="/novosti/">Все новости →</a>
+    </div>
+    <div class="news-l">
+      {news.map((n) => (
+        <article>
+          {n.data.image && <img src={n.data.image} alt="" loading="lazy" width="900" height="675" />}
+          <time datetime={n.data.date.toISOString()}>{fmt.format(n.data.date)}</time>
+          <h3>{n.data.title}</h3>
+          <p>{n.data.excerpt}</p>
+          <a href={`/novosti/${n.id}/`}>Подробнее</a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <div class="uzb" data-img="/images/ornaments/uzor-izumrud.png" style="--h:30px;--rules:var(--red)" aria-hidden="true"></div>
+
+  <section class="about" id="about">
+    <div>
+      <h2><a href="/istoriya/">О храме</a></h2>
+      <p class="lead"><span class="cap" aria-hidden="true"></span><span class="sr">П</span>ервый молебен в посёлке Челюскинский прошёл 28 августа 2005 года — на Успение Пресвятой Богородицы. Через год была создана община, а в 2011-м заложен каменный храм.</p>
+      <p>При храме действует воскресная школа, приход совершает паломнические поездки и общие добрые дела. Двери храма открыты для всех: приходите, будем рады!</p>
+      <a class="more" href="/istoriya/">История храма →</a>
+    </div>
+    <ul class="facts">
+      <li style="--i:0"><b>2005</b>первая служба, 28 августа</li>
+      <li style="--i:1"><b>2006</b>создана община, назначен настоятель</li>
+      <li style="--i:2"><b>2010</b>освящён и установлен Крест</li>
+      <li style="--i:3"><b>2011</b>закладка храма</li>
+      <li style="--i:4"><b>2014</b>увенчан куполами и крестами</li>
+    </ul>
+  </section>
+
+  <div class="uzb" data-img="/images/ornaments/uzor-izumrud.png" style="--h:30px;--rules:var(--red)" aria-hidden="true"></div>
+
+  <section class="help" id="help">
+    <div>
+      <h2><a href="/pomoch/">Помощь храму</a></h2>
+      <p class="lead"><span class="cap cap-h" aria-hidden="true"></span><span class="sr">Х</span>рам содержит приход и благотворители. Пожертвования помогают совершать богослужения, содержать храм и вести духовно-просветительскую работу.</p>
+      <div class="htxt">
+        <i class="qsp" aria-hidden="true"></i>
+        <figure class="quote" id="quote">
+          <img class="fin" src="/images/ornaments/zaamvonnaya-ink.webp" alt="Освяти любящия благолепие дому Твоего, Ты тех воспрослави Божественною Твоею силою. Заамвонная молитва." width="1100" height="795" loading="lazy" decoding="async" />
+        </figure>
+        <p>Перевести пожертвование можно по реквизитам, по QR-коду в приложении банка или оставить в церковной лавке. Приход всегда рад и помощи делом.</p>
+      </div>
+    </div>
+    <div class="req" id="rekvizity">
+      <h3>Реквизиты <span class="tbc">уточнить</span></h3>
+      <dl>
+        <dt>Получатель</dt>
+        <dd>Приход Успенской церкви пос. Челюскинский</dd>
+        <dt>Назначение</dt>
+        <dd>Добровольное пожертвование</dd>
+        <dt>Уточнить</dt>
+        <dd>в церковной лавке или по телефону</dd>
+      </dl>
+      <p class="give"><a class="btn solid" href="/pomoch/">Помочь храму</a></p>
+    </div>
+  </section>
+
+  <script type="application/json" id="svc-data" set:html={calDays}></script>
+</Base>
+
+<script>
+  // Ближайшая служба по московскому времени из календаря.
+  // Служба считается прошедшей через 60 минут после начала.
+  (function () {
+    const el = document.getElementById('svc-day');
+    if (!el) return;
+    const dataEl = document.getElementById('svc-data');
+    let days = [];
+    try { days = JSON.parse(dataEl.textContent); } catch (e) { return; }
+    const msk = new Date(Date.now() + 3 * 3600e3);
+    const nowMs = msk.getTime();
+    const baseMs = Date.UTC(msk.getUTCFullYear(), msk.getUTCMonth(), msk.getUTCDate());
+    const curDay = msk.getUTCDate();
+    const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    let found = null;
+    for (const d of days) {
+      const dayMs = baseMs + (d.day - curDay) * 86400e3;
+      for (const ev of d.events) {
+        for (const s of ev.services) {
+          const [hh, mm] = s[0].split(':').map(Number);
+          const svcMs = dayMs + (hh * 60 + mm) * 60e3;
+          if (svcMs + 3600e3 > nowMs) { found = { d, ev, s }; break; }
+        }
+        if (found) break;
+      }
+      if (found) break;
+    }
+    if (!found) { el.remove(); return; }
+    const { d, ev, s } = found;
+    el.querySelector('.vA-date b').textContent = d.day + ' ' + MONTHS[msk.getUTCMonth()];
+    el.querySelector('.vA-wd').textContent = d.wd;
+    const f = el.querySelector('.vA-f');
+    if (f) f.textContent = ev.feast || '';
+    el.querySelector('ul').innerHTML = '<li><time>' + s[0] + '</time><span>' + s[1] + '</span></li>';
+  })();
+</script>

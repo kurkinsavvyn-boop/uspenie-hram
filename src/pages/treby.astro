@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../data/site.json';
+---
+
+<Base title="Заказать требу — Храм Успения Пресвятой Богородицы в Челюскинском" description="Заказать требу в храме Успения Пресвятой Богородицы в Челюскинском: молебен, панихида, сорокоуст.">
+  <section class="page">
+    <div class="wrap">
+      <div class="page-head">
+        <span class="kicker">Таинства и требы</span>
+        <h1>Заказать требу</h1>
+        <p class="lead">Оставьте заявку — священник или сотрудник храма свяжется с вами для уточнения.</p>
+      </div>
+
+      <article class="article">
+        <h2>Быстрая связь</h2>
+        <div class="hero-actions">
+          <a class="btn" href={`https://wa.me/${site.phone_raw.slice(1)}?text=${encodeURIComponent('Здравствуйте! Хочу заказать требу.')}`} target="_blank" rel="noopener">Написать в WhatsApp</a>
+          <a class="btn btn--ghost" href={site.social[0].url} target="_blank" rel="noopener">Написать в Telegram</a>
+          <a class="btn btn--ghost" href={`tel:${site.phone_raw}`}>Позвонить: {site.phone}</a>
+        </div>
+
+        <h2>Форма заявки</h2>
+        <form class="form" id="treba-form">
+          <div class="field">
+            <label for="f-name">Ваше имя</label>
+            <input id="f-name" name="name" type="text" required placeholder="Иван Иванович" />
+          </div>
+          <div class="field">
+            <label for="f-phone">Телефон</label>
+            <input id="f-phone" name="phone" type="tel" required placeholder="+7 900 000-00-00" />
+          </div>
+          <div class="field">
+            <label for="f-treba">Тип требы</label>
+            <select id="f-treba" name="treba">
+              <option>Молебен</option>
+              <option>Панихида</option>
+              <option>Сорокоуст о здравии</option>
+              <option>Сорокоуст о упокоении</option>
+              <option>Освящение (жилище, автомобиль)</option>
+              <option>Другое</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-date">Желаемая дата</label>
+            <input id="f-date" name="date" type="date" />
+          </div>
+          <div class="field">
+            <label for="f-names">Имена для поминовения</label>
+            <textarea id="f-names" name="names" rows="3" placeholder="Например: о здравии — Мария, Иоанн; о упокоении — Анна"></textarea>
+          </div>
+          <div class="field">
+            <label for="f-msg">Комментарий</label>
+            <textarea id="f-msg" name="message" rows="3" placeholder="Дополнительные пожелания"></textarea>
+          </div>
+          <button class="btn" type="submit">Отправить заявку</button>
+          <p class="form-note">Заявка откроется в вашем почтовом приложении и будет отправлена на адрес храма. Оплата треб будет подключена позже (ЮKassa).</p>
+        </form>
+      </article>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.getElementById('treba-form');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = new FormData(form);
+    const lines = [
+      `Заявка на требу`,
+      `Имя: ${d.get('name')}`,
+      `Телефон: ${d.get('phone')}`,
+      `Треба: ${d.get('treba')}`,
+      `Дата: ${d.get('date') || '—'}`,
+      `Имена: ${d.get('names') || '—'}`,
+      `Комментарий: ${d.get('message') || '—'}`,
+    ];
+    const subject = encodeURIComponent('Заявка на требу — Успенский храм');
+    const body = encodeURIComponent(lines.join('\n'));
+    window.location.href = `mailto:${'ierey_vladislav@mail.ru'}?subject=${subject}&body=${body}`;
+  });
+</script>

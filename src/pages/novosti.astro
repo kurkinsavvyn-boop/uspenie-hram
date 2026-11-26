@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import ornHtml from '../components/orn.html?raw';
+import { getCollection } from 'astro:content';
+
+const news = (await getCollection('news')).sort((a, b) => b.data.date - a.data.date);
+const fmt = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<Base title="Новости — Храм Успения Пресвятой Богородицы в Челюскинском" description="Новости и события прихода храма Успения Пресвятой Богородицы в Челюскинском.">
+  <section class="phead">
+    <h1>Новости</h1>
+    <p class="lead">События приходской жизни.</p>
+  </section>
+
+  <Fragment set:html={ornHtml} />
+
+  <section class="news" id="news">
+    <div class="news-l">
+      {news.map((n) => (
+        <article>
+          {n.data.image && <a href={`/novosti/${n.id}/`}><img src={n.data.image} alt="" loading="lazy" width="900" height="675" /></a>}
+          <time datetime={n.data.date.toISOString()}>{fmt.format(n.data.date)}</time>
+          <h3>{n.data.title}</h3>
+          <p>{n.data.excerpt}</p>
+          <a href={`/novosti/${n.id}/`}>Подробнее</a>
+        </article>
+      ))}
+    </div>
+  </section>
+</Base>

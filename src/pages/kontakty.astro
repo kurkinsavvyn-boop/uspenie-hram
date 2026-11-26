@@ -1,0 +1,79 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../data/site.json';
+import ornHtml from '../components/orn.html?raw';
+---
+
+<Base title="Контакты — Храм Успения Пресвятой Богородицы в Челюскинском" description="Адрес, телефон и контакты храма Успения Пресвятой Богородицы в Челюскинском.">
+  <section class="phead">
+    <h1>Контакты</h1>
+    <p class="lead">Храм Успения Пресвятой Богородицы в посёлке Челюскинский. Двери открыты для всех.</p>
+  </section>
+
+  <Fragment set:html={ornHtml} />
+
+  <div class="ct-info">
+    <div class="blk key">
+      <h2>Телефон</h2>
+      <div class="row">
+        <p><a class="big" href={`tel:${site.phone_raw}`}>{site.phone}</a></p>
+        <button class="cp" type="button" data-copy={site.phone} aria-label="Скопировать телефон" title="Скопировать">
+          <svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <svg class="ck" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l5 5 9-10"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="blk key addr">
+      <h2>Адрес</h2>
+      <div class="row">
+        <p>{site.address}</p>
+        <button class="cp" type="button" data-copy={site.address} aria-label="Скопировать адрес" title="Скопировать">
+          <svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <svg class="ck" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l5 5 9-10"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="blk">
+      <h2>Почта</h2>
+      <div class="row">
+        <p><a class="big" href={`mailto:${site.email}`}>{site.email}</a></p>
+        <button class="cp" type="button" data-copy={site.email} aria-label="Скопировать почту" title="Скопировать">
+          <svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <svg class="ck" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l5 5 9-10"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="blk">
+      <h2>Храм открыт</h2>
+      <p class="hours"><span>ежедневно</span>{site.hours_time}</p>
+    </div>
+
+    <div class="blk">
+      <h2>Как добраться</h2>
+      <p>Посёлок Челюскинский Пушкинского городского округа Московской области, ул. Садовая, 8. От станции Пушкино или Ивантеевка — на автобусе до остановки «Челюскинский».</p>
+      <a class="btn" href="https://yandex.ru/maps/?text=Челюскинский, Храм Успения Пресвятой Богородицы" target="_blank" rel="noopener">Открыть в Яндекс.Картах</a>
+    </div>
+
+    <div class="blk">
+      <h2>Приход в сети</h2>
+      <ul class="soc">
+        <li><a href="https://t.me/uspenskjy" target="_blank" rel="noopener"><b>Telegram</b>новости и объявления</a></li>
+        <li><a href="https://wa.me/79266057455" target="_blank" rel="noopener"><b>WhatsApp</b>быстрая связь</a></li>
+        <li><a href="https://vk.com/uspenskijhram" target="_blank" rel="noopener"><b>ВКонтакте</b>фотографии и новости</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="ct-map">
+    <a class="btn" href="https://yandex.ru/maps/?text=Челюскинский, Храм Успения Пресвятой Богородицы" target="_blank" rel="noopener">Построить маршрут →</a>
+  </div>
+</Base>
+
+<script>
+  document.querySelectorAll('.cp').forEach((b) => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy || ''); b.classList.add('ok'); setTimeout(() => b.classList.remove('ok'), 1500); } catch (e) {}
+  }));
+</script>

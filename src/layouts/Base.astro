@@ -1,0 +1,153 @@
+---
+import '../styles/theme.css';
+import '../styles/pages.css';
+import site from '../data/site.json';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = site.name + ' ' + site.location, description = '' } = Astro.props;
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isActive = (href: string) => (path === href.replace(/\/+$/, '') ? 'page' : undefined);
+
+const nav = [
+  { label: 'Расписание', href: '/raspisanie/' },
+  { label: 'О храме', href: '/istoriya/' },
+  { label: 'Записки', href: '/zapiski/' },
+  { label: 'Новости', href: '/novosti/' },
+  { label: 'Воскресная школа', href: '/shkola/' },
+  { label: 'Контакты', href: '/kontakty/' },
+  { label: 'Помочь храму', href: '/pomoch/' },
+];
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/png" href="/images/logo.png" />
+    <link rel="apple-touch-icon" href="/images/logo.png" />
+  </head>
+  <body id="top">
+    <a class="skip" href="#main">К содержимому</a>
+
+    <header class="hdr">
+      <div class="hdr-in">
+        <a class="brand" href="/">
+          <b>{site.name}</b>
+          <small>{site.location}</small>
+        </a>
+        <nav class="nav" id="menu" aria-label="Основное меню">
+          {nav.map((item) => (
+            <a href={item.href} aria-current={isActive(item.href)}>{item.label}</a>
+          ))}
+          <p class="nav-foot">
+            <a href={`tel:${site.phone_raw}`}>{site.phone}</a><br />
+            {site.address}
+          </p>
+        </nav>
+        <button class="burger" type="button" aria-label="Меню" aria-controls="menu" aria-expanded="false">
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="ftr">
+      <div class="uzb" data-img="/images/ornaments/uzor-izumrud.png" style="--h:24px;--rules:var(--red)" aria-hidden="true"></div>
+      <div class="ftr-in">
+        <div class="ftr-brand">
+          <a class="ftr-name" href="/">
+            <b>{site.name}</b>
+            <small>{site.location}</small>
+          </a>
+          <p>{site.creed}</p>
+        </div>
+        <div>
+          <h4>Контакты</h4>
+          <p>{site.address}</p>
+          <p><a href={`tel:${site.phone_raw}`}>{site.phone}</a></p>
+          <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+        </div>
+        <div>
+          <h4>Разделы</h4>
+          <p><a href="/raspisanie/">Расписание</a></p>
+          <p><a href="/istoriya/">История храма</a></p>
+          <p><a href="/duhovenstvo/">Духовенство</a></p>
+          <p><a href="/tainstva/">Таинства и требы</a></p>
+          <p><a href="/novosti/">Новости</a></p>
+          <p><a href="/shkola/">Воскресная школа</a></p>
+        </div>
+        <div>
+          <h4>Приход в сети</h4>
+          {site.social.map((s) => <p><a href={s.url} target="_blank" rel="noopener">{s.label}</a></p>)}
+        </div>
+      </div>
+      <div class="ftr-bot">
+        <span>© {new Date().getFullYear()} {site.name} {site.location}</span>
+        <span class="ftr-extra"><a href="/galereya/">Галерея</a> · <a href="/teksty/">Священные тексты</a> · <a href="/episkop/">Епископ</a> · <a href="/treby/">Заказать требу</a></span>
+        <a href="#top">Наверх</a>
+      </div>
+    </footer>
+
+    <script>
+      // Меню-бургер
+      const burger = document.querySelector('.burger');
+      const setMenu = (open) => { document.body.classList.toggle('menu-open', open); burger?.setAttribute('aria-expanded', open ? 'true' : 'false'); };
+      burger?.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+      document.querySelectorAll('.nav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.body.classList.contains('menu-open')) { setMenu(false); burger?.focus(); }
+      });
+      matchMedia('(min-width:1000px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
+
+      // Орнаментальные полосы .uzb
+      (function () {
+        var R = 125 / 192, bands = [].slice.call(document.querySelectorAll('.uzb'));
+        function fill(b) {
+          b.innerHTML = '<i class="ln"></i><i class="gl"><b></b><b></b></i>';
+          var w = b.clientWidth, h = b.clientHeight, tw = h * R, x0 = w / 2 - tw / 2, K = Math.ceil(x0 / tw) + 1, f = document.createDocumentFragment();
+          for (var k = -K; k <= K; k++) {
+            var t = document.createElement('i'); t.className = 't';
+            t.style.cssText = 'left:' + (x0 + k * tw) + 'px;width:' + (tw + .4) + 'px;--d:' + Math.abs(k) + ';background-image:url(' + b.dataset.img + ')';
+            f.appendChild(t);
+          }
+          b.insertBefore(f, b.querySelector('.gl'));
+          b.style.setProperty('--bw', w + 'px');
+          b.style.setProperty('--ox', (((x0 % tw) + tw) % tw) + 'px');
+          b.style.setProperty('--gd', (.75 + K * .06 + .3) + 's');
+          b._w = w;
+        }
+        bands.forEach(fill);
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } }); }, { threshold: .6 });
+          bands.forEach(function (b) { io.observe(b); });
+        } else bands.forEach(function (b) { b.classList.add('on'); });
+        addEventListener('resize', function () { bands.forEach(function (b) { if (Math.abs(b.clientWidth - b._w) > 40) { fill(b); } }); });
+      })();
+
+      // Подгонка крупного названия в hero под ширину колонки
+      (function () {
+        const h = document.querySelector('.hero-t h1'); if (!h) return;
+        const fit = () => {
+          h.style.fontSize = '';
+          const box = h.parentElement.clientWidth, r = document.createRange();
+          let widest = 0;
+          h.querySelectorAll('span').forEach((s) => { r.selectNodeContents(s); widest = Math.max(widest, r.getBoundingClientRect().width); });
+          if (widest > box) h.style.fontSize = (parseFloat(getComputedStyle(h).fontSize) * box / widest * .98) + 'px';
+        };
+        (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
+        addEventListener('resize', fit);
+      })();
+    </script>
+  </body>
+</html>

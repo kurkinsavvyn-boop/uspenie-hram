@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+
+const links = [
+  { label: 'Официальный сайт епархии', url: 'https://eparhsp.ru' },
+  { label: 'Telegram-канал епархии', url: 'https://t.me/eparhsp' },
+  { label: 'Страница епархии ВКонтакте', url: 'https://vk.com/eparhsp' },
+  { label: 'Rutube-канал', url: 'https://rutube.ru/channel/21351868/' },
+  { label: 'Дзен-канал', url: 'https://dzen.ru/eparhsp' },
+  { label: 'Ивантеевское благочиние (Telegram)', url: 'https://t.me/ivanteevskablago' },
+];
+---
+
+<Base title="Ресурсы епархии — Храм Успения Пресвятой Богородицы в Челюскинском" description="Ресурсы Сергиево-Посадской епархии в интернете.">
+  <section class="page">
+    <div class="wrap">
+      <div class="page-head">
+        <span class="kicker">Епархия</span>
+        <h1>Ресурсы епархии</h1>
+        <p class="lead">Сергиево-Посадская епархия в интернете.</p>
+      </div>
+
+      <article class="article">
+        <ul>
+          {links.map((l) => <li><a href={l.url} target="_blank" rel="noopener">{l.label}</a></li>)}
+        </ul>
+      </article>
+    </div>
+  </section>
+</Base>

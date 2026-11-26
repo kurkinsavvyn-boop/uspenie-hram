@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../data/site.json';
+---
+
+<Base title="Духовенство — Храм Успения Пресвятой Богородицы в Челюскинском" description="Духовенство храма Успения Пресвятой Богородицы в посёлке Челюскинский.">
+  <section class="page">
+    <div class="wrap">
+      <div class="page-head">
+        <span class="kicker">О храме</span>
+        <h1>Духовенство</h1>
+      </div>
+
+      <article class="person">
+        <img src="/images/rector.jpg" alt="Иерей Владислав Форкавец" />
+        <div>
+          <h2>Иерей Владислав Форкавец</h2>
+          <div class="role">Настоятель храма</div>
+          <p>Настоятель Успенского храма посёлка Челюскинский. Назначен указом правящего архиерея Московской епархии 14 марта 2013 года.</p>
+          <p>Контакты для связи: <a href={`mailto:${site.email}`}>{site.email}</a> · <a href={`tel:${site.phone_raw}`}>{site.phone}</a></p>
+        </div>
+      </article>
+
+      <article class="person">
+        <img src="/images/knyazev.jpg" alt="Священник Тимофей Князев" />
+        <div>
+          <h2>Священник Тимофей Князев</h2>
+          <div class="role">Первый настоятель (2006–2013)</div>
+          <p>Назначен настоятелем Успенской церкви посёлка Челюскинский 20 октября 2006 года указом митрополита Крутицкого и Коломенского Ювеналия. Нёс служение до марта 2013 года.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+</Base>

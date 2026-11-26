@@ -1,0 +1,14 @@
+name = "uspenie-zapiski"
+main = "index.js"
+compatibility_date = "2024-11-01"
+
+# Публичные переменные (не секреты)
+[vars]
+SITE_URL = "https://uspenie-hram.org"
+ALLOWED_ORIGIN = "https://uspenie-hram.org"
+
+# Секреты задаются командами `wrangler secret put`:
+#   YOOKASSA_SHOP_ID
+#   YOOKASSA_SECRET_KEY
+#   TELEGRAM_BOT_TOKEN
+#   TELEGRAM_CHAT_ID

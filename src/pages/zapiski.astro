@@ -1,0 +1,202 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../data/site.json';
+
+// Цены (руб.) — должны совпадать с ценами на сервере (worker/index.js)
+const PRICES: Record<string, number> = {
+  'Простая записка': 50,
+  'Проскомидия': 100,
+  'Молебен': 150,
+  'Сорокоуст': 300,
+  'Годовое поминовение': 1000,
+};
+
+const VIDS = [
+  { value: 'Простая записка', b: 'Простая', i: 'имена читают на ектении' },
+  { value: 'Проскомидия', b: 'Проскомидия', i: 'за каждое имя вынимают частицу из просфоры' },
+  { value: 'Молебен', b: 'Молебен', i: 'поминовение на молебне', upkB: 'Панихида', upkI: 'поминовение на панихиде', dataUpk: 'Панихида' },
+  { value: 'Сорокоуст', b: 'Сорокоуст', i: 'поминовение 40 дней' },
+  { value: 'Годовое поминовение', b: 'Годовое', i: 'поминовение в течение года' },
+];
+const priceJson = JSON.stringify(PRICES);
+---
+
+<Base title="Подать записку — Храм Успения Пресвятой Богородицы в Челюскинском" description="Подать записку о здравии или об упокоении онлайн: заполните имена и оплатите.">
+  <section class="page">
+    <div class="wrap">
+      <div class="page-head">
+        <span class="kicker">Поминовение</span>
+        <h1>Подать записку</h1>
+      </div>
+
+      <div class="zp">
+        <form id="zp" novalidate data-phone={site.phone_raw.replace('+', '')}>
+          <fieldset class="step">
+            <legend>О ком молимся</legend>
+            <div class="kind">
+              <label><input type="radio" name="type" value="zdr" checked /><span>О здравии</span></label>
+              <label><input type="radio" name="type" value="upk" /><span>Об упокоении</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend>Какая записка<button type="button" class="how" id="how" aria-label="Пояснение о видах записок"></button></legend>
+            <div class="vids">
+              {VIDS.map((v, idx) => (
+                <label>
+                  <input type="radio" name="vid" value={v.value} checked={idx === 0} data-upk={v.dataUpk} />
+                  <span>
+                    <b data-zdr={v.b} data-upk={v.upkB}>{v.b}</b>
+                    <u class="vprice">{PRICES[v.value]} ₽</u>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset class="step s-slip">
+            <legend>Впишите имена</legend>
+            <p class="hint above">Имена, данные в крещении, в родительном падеже</p>
+            <div class="slip" id="slip">
+              <svg class="cr" viewBox="0 0 40 64" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                <path d="M20 3V61M13 10H27M5 21H35M12 47L28 40" />
+              </svg>
+              <p class="slip-h" id="slipH">О здравии</p>
+              <ol class="lines" id="lines">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <li>
+                    <label>
+                      <span class="sr">Имя {i + 1}</span>
+                      <input type="text" name={`name${i + 1}`} autocomplete="off" autocapitalize="words" placeholder={['Александра', 'Марии', 'Николая'][i] || ''} />
+                    </label>
+                  </li>
+                ))}
+              </ol>
+              <p class="slip-v" id="slipV">Простая записка</p>
+            </div>
+
+            <div class="price"><span>Рекомендуемое пожертвование</span><b id="priceVal">{PRICES['Простая записка']} ₽</b></div>
+            <button class="btn solid send" type="submit">Отправить записку</button>
+            <p class="after">В записке пишут имена, а священник поминает их за богослужением. О здравии поминают живых, об упокоении почивших.</p>
+            <p class="sent" id="sent" role="status" hidden></p>
+          </fieldset>
+        </form>
+
+        <dialog class="rules" id="rules">
+          <button class="x" type="button" aria-label="Закрыть" id="rulesX">×</button>
+          <h2>Виды записок</h2>
+          <ul class="vids-help">
+            <li><b>Простая</b> — имена поминаются в алтаре и читаются на ектении.</li>
+            <li><b>Проскомидия</b> — за каждое имя вынимают частицу из просфоры.</li>
+            <li><b>Молебен / Панихида</b> — поминовение на молебне (о здравии) или на панихиде (об упокоении).</li>
+            <li><b>Сорокоуст</b> — поминовение 40 дней на литургии.</li>
+            <li><b>Годовое поминовение</b> — поминовение в течение года.</li>
+          </ul>
+          <h2>Как писать записку</h2>
+          <ol>
+            <li>Наверху поставьте восьмиконечный крест и напишите «О здравии» или «Об упокоении».</li>
+            <li>Ниже пишите имена в родительном падеже («кого?»): <i>Александра, Марии, Николая</i>.</li>
+            <li>Имена пишите в церковной форме: <i>Георгия</i> вместо <i>Юрия</i>, <i>Фотинии</i> вместо <i>Светланы</i>. Если не знаете церковное имя — напишите данное при крещении.</li>
+            <li>Фамилии, отчества и звания не пишут. Священнослужителей указывают с саном: <i>иерея Александра</i>. Можно добавить <i>мл.</i> (младенца), <i>отр.</i> (отрока), <i>бол.</i> (болящего).</li>
+            <li>В одной записке лучше писать не больше 10 имён, разборчиво.</li>
+            <li>Об упокоении подают за православных крещёных. О некрещёных и самоубийцах церковно не молятся.</li>
+          </ol>
+          <h3>Как подать в храме</h3>
+          <p>За свечным ящиком, до начала литургии.</p>
+        </dialog>
+      </div>
+    </div>
+  </section>
+
+  <script type="application/json" id="zp-prices" set:html={priceJson}></script>
+</Base>
+
+<style is:global>
+  .vids span { position: relative; }
+  .vids .vprice { display: block; margin-top: 8px; text-decoration: none; font: 400 15px/1 var(--title), serif; color: var(--deep); letter-spacing: .02em; }
+</style>
+
+<script>
+  const form = document.getElementById('zp') as HTMLFormElement | null;
+  if (form) {
+    const API = (import.meta.env.PUBLIC_API_BASE as string) || '/api';
+    const lines = document.getElementById('lines')!;
+    const inputs = () => Array.from(lines.querySelectorAll<HTMLInputElement>('input'));
+    const slipH = document.getElementById('slipH')!;
+    const slipV = document.getElementById('slipV')!;
+    const priceVal = document.getElementById('priceVal')!;
+    const sent = document.getElementById('sent')!;
+    const sendBtn = form.querySelector<HTMLButtonElement>('.send')!;
+    const prices: Record<string, number> = JSON.parse(document.getElementById('zp-prices')!.textContent || '{}');
+
+    const vid = () => form.querySelector<HTMLInputElement>('[name=vid]:checked')!;
+    const price = () => prices[vid().value] ?? 0;
+
+    function render() {
+      const upk = (form.querySelector<HTMLInputElement>('[name=type]:checked')!).value === 'upk';
+      document.body.classList.toggle('upk', upk);
+      slipH.textContent = upk ? 'Об упокоении' : 'О здравии';
+      form.querySelectorAll<HTMLElement>('[data-zdr]').forEach((el) => {
+        el.textContent = upk && el.dataset.upk ? el.dataset.upk : el.dataset.zdr!;
+      });
+      const v = vid();
+      slipV.textContent = upk && v.dataset.upk ? v.dataset.upk : v.value;
+      priceVal.textContent = price() + ' ₽';
+    }
+    form.addEventListener('change', render);
+    render();
+
+    inputs().forEach((inp, i) => inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); (inputs()[i + 1] || inp).focus(); }
+    }));
+
+    const rules = document.getElementById('rules') as HTMLDialogElement;
+    document.getElementById('how')!.addEventListener('click', () => rules.showModal());
+    document.getElementById('rulesX')!.addEventListener('click', () => rules.close());
+    rules.addEventListener('click', (e) => { if (e.target === rules) rules.close(); });
+
+    function show(msg: string, cls = '') {
+      sent.textContent = msg;
+      sent.className = 'sent ' + cls;
+      sent.hidden = false;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const names = inputs().map((i) => i.value.trim()).filter(Boolean);
+      if (!names.length) { show('Впишите хотя бы одно имя.', 'err'); return; }
+      const v = vid();
+      const upk = (form.querySelector<HTMLInputElement>('[name=type]:checked')!).value === 'upk';
+      const payload = {
+        type: upk ? 'upk' : 'zdr',
+        vid: upk && v.dataset.upk ? v.dataset.upk : v.value,
+        names,
+        price: price(),
+      };
+      sendBtn.disabled = true;
+      show('Отправляем…');
+      try {
+        const res = await fetch(API + '/note', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'HTTP ' + res.status);
+        if (data.confirmation_url) { window.location.href = data.confirmation_url; return; }
+        show(data.message || 'Записка отправлена. Спасибо!', 'ok');
+        form.reset();
+        render();
+      } catch (err) {
+        // Бэкенд ещё не подключён — отправляем записку в WhatsApp храма
+        const typeRu = upk ? 'Об упокоении' : 'О здравии';
+        const text = `Записка (${typeRu}) — ${payload.vid}\n${names.join(', ')}\nРекомендуемое пожертвование: ${payload.price} ₽`;
+        const phone = (form as HTMLElement).dataset.phone || '';
+        window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+        show('Открываем WhatsApp храма — отправьте записку в чате.', '');
+      } finally {
+        sendBtn.disabled = false;
+      }
+    });
+  }
+</script>
