@@ -215,7 +215,11 @@ const calDays = JSON.stringify(calendar.days);
     const LINES = [[95, 262, 150, 975], [250, 355, 105, 995], [348, 455, 90, 930], [448, 565, 40, 1055], [575, 670, 15, 1095]];
     const load = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
     const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
-    load(fin.getAttribute('src')).then(run).catch(done);
+    const start = () => load(fin.getAttribute('src')).then(run).catch(done);
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); start(); } }, { threshold: 0.5 });
+      io.observe(fig);
+    } else { start(); }
     function run(img) {
       if (!img.naturalWidth) { done(); return; }
       const dpr = Math.min(2, window.devicePixelRatio || 1);
