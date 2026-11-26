@@ -452,3 +452,6 @@
 .drawing.done .cv, .quote.done .cv { opacity: 0; transition: opacity .6s ease .2s; }
 .hero-pic .drawing .fin { filter: drop-shadow(0 16px 26px rgba(42,29,23,.13)); animation: none; opacity: 1; }
 @media (max-width: 899px) { .hero-pic .drawing .fin { filter: none; } }
+
+/* Фото храма — статичное, без анимации */
+.hero-pic img { opacity: 1; animation: none; }
