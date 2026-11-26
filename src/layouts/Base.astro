@@ -112,10 +112,14 @@ const nav = [
 
       // Орнаментальные полосы .uzb
       (function () {
-        var R = 125 / 192, bands = [].slice.call(document.querySelectorAll('.uzb'));
+        var R = 125 / 192, all = [].slice.call(document.querySelectorAll('.uzb'));
         function fill(b) {
           b.innerHTML = '<i class="ln"></i><i class="gl"><b></b><b></b></i>';
-          var w = b.clientWidth, h = b.clientHeight, tw = h * R, x0 = w / 2 - tw / 2, K = Math.ceil(x0 / tw) + 1, f = document.createDocumentFragment();
+          var w = b.clientWidth, h = b.clientHeight;
+          // Защита от деления на 0: если CSS ещё не загрузился, высота = 0,
+          // иначе K = Infinity → бесконечный цикл → краш вкладки (телефон).
+          if (!w || !h) { b._filled = false; return; }
+          var tw = h * R, x0 = w / 2 - tw / 2, K = Math.ceil(x0 / tw) + 1, f = document.createDocumentFragment();
           for (var k = -K; k <= K; k++) {
             var t = document.createElement('i'); t.className = 't';
             t.style.cssText = 'left:' + (x0 + k * tw) + 'px;width:' + (tw + .4) + 'px;--d:' + Math.abs(k) + ';background-image:url(' + b.dataset.img + ')';
@@ -125,14 +129,17 @@ const nav = [
           b.style.setProperty('--bw', w + 'px');
           b.style.setProperty('--ox', (((x0 % tw) + tw) % tw) + 'px');
           b.style.setProperty('--gd', (.75 + K * .06 + .3) + 's');
-          b._w = w;
+          b._w = w; b._filled = true;
         }
-        bands.forEach(fill);
+        function fillMissing() { all.forEach(function (b) { if (!b._filled) fill(b); }); }
+        all.forEach(fill);
+        addEventListener('load', fillMissing);
+        setTimeout(fillMissing, 350);
         if ('IntersectionObserver' in window) {
           var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } }); }, { threshold: .6 });
-          bands.forEach(function (b) { io.observe(b); });
-        } else bands.forEach(function (b) { b.classList.add('on'); });
-        addEventListener('resize', function () { bands.forEach(function (b) { if (Math.abs(b.clientWidth - b._w) > 40) { fill(b); } }); });
+          all.forEach(function (b) { io.observe(b); });
+        } else all.forEach(function (b) { b.classList.add('on'); });
+        addEventListener('resize', function () { all.forEach(function (b) { if (Math.abs(b.clientWidth - b._w) > 40) { fill(b); } }); });
       })();
 
       // Подгонка крупного названия в hero под ширину колонки

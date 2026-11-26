@@ -412,3 +412,6 @@
 /* Чуть больше отступа после «в Челюскинском» и чуть меньше орнамент */
 .hero-left .sub { margin-bottom: clamp(16px, 2.6vw, 30px); }
 .hero-left .orn .mid { max-width: 400px; }
+
+/* На телефоне убираем тяжёлый drop-shadow у акварели (риск GPU-краша на слабых устройствах) */
+@media (max-width: 899px) { .hero-pic img { filter: none; } }
