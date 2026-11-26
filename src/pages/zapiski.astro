@@ -40,7 +40,7 @@ const priceJson = JSON.stringify(PRICES);
           </fieldset>
 
           <fieldset class="step">
-            <legend>Какая записка<button type="button" class="how" id="how" aria-label="Пояснение о видах записок"></button></legend>
+            <legend>Какая записка<button type="button" class="how" id="q-vids" aria-label="Что означают виды записок"></button></legend>
             <div class="vids">
               {VIDS.map((v, idx) => (
                 <label>
@@ -55,7 +55,7 @@ const priceJson = JSON.stringify(PRICES);
           </fieldset>
 
           <fieldset class="step s-slip">
-            <legend>Впишите имена</legend>
+            <legend>Впишите имена<button type="button" class="how-link" id="q-how">Как писать записку?</button></legend>
             <p class="hint above">Имена, данные в крещении, в родительном падеже</p>
             <div class="slip" id="slip">
               <svg class="cr" viewBox="0 0 40 64" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
@@ -82,8 +82,8 @@ const priceJson = JSON.stringify(PRICES);
           </fieldset>
         </form>
 
-        <dialog class="rules" id="rules">
-          <button class="x" type="button" aria-label="Закрыть" id="rulesX">×</button>
+        <dialog class="rules" id="dlg-vids">
+          <button class="x" type="button" aria-label="Закрыть" id="x-vids">×</button>
           <h2>Виды записок</h2>
           <ul class="vids-help">
             <li><b>Простая</b> — имена поминаются в алтаре и читаются на ектении.</li>
@@ -92,6 +92,10 @@ const priceJson = JSON.stringify(PRICES);
             <li><b>Сорокоуст</b> — поминовение 40 дней на литургии.</li>
             <li><b>Годовое поминовение</b> — поминовение в течение года.</li>
           </ul>
+        </dialog>
+
+        <dialog class="rules" id="dlg-how">
+          <button class="x" type="button" aria-label="Закрыть" id="x-how">×</button>
           <h2>Как писать записку</h2>
           <ol>
             <li>Наверху поставьте восьмиконечный крест и напишите «О здравии» или «Об упокоении».</li>
@@ -150,10 +154,16 @@ const priceJson = JSON.stringify(PRICES);
       if (e.key === 'Enter') { e.preventDefault(); (inputs()[i + 1] || inp).focus(); }
     }));
 
-    const rules = document.getElementById('rules') as HTMLDialogElement;
-    document.getElementById('how')!.addEventListener('click', () => rules.showModal());
-    document.getElementById('rulesX')!.addEventListener('click', () => rules.close());
-    rules.addEventListener('click', (e) => { if (e.target === rules) rules.close(); });
+    function bindDlg(btnId: string, dlgId: string, xId: string) {
+      const btn = document.getElementById(btnId);
+      const dlg = document.getElementById(dlgId) as HTMLDialogElement | null;
+      const x = document.getElementById(xId);
+      btn?.addEventListener('click', () => dlg?.showModal());
+      x?.addEventListener('click', () => dlg?.close());
+      dlg?.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    }
+    bindDlg('q-vids', 'dlg-vids', 'x-vids');
+    bindDlg('q-how', 'dlg-how', 'x-how');
 
     function show(msg: string, cls = '') {
       sent.textContent = msg;
