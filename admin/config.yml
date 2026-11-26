@@ -1,0 +1,100 @@
+# Decap CMS — админка сайта Храма Успения Пресвятой Богородицы в Челюскинском
+#
+# ВХОД В АДМИНКУ (разовая настройка):
+#   1. Зарегистрируйтесь на https://turbo.decapcms.org/signup (Free-план: 1 сайт, 1 редактор — бесплатно).
+#   2. Создайте организацию, подключите GitHub и создайте сайт (укажите ваш репозиторий).
+#   3. На вкладке Overview сайта скопируйте «Site ID» (UUID) и вставьте ниже в `turbo_site_id`.
+#   4. Укажите в Turbo «admin interface URLs» адрес админки, например: https://uspenie-hram.org/admin/
+#
+# Локальная проверка без Turbo: `npx decap-server`, затем `npm run dev` и откройте /admin/
+
+backend:
+  name: turbo-github
+  turbo_site_id: PASTE_YOUR_TURBO_SITE_ID_HERE
+  branch: main
+
+local_backend: true
+
+media_folder: public/images
+public_folder: /images
+
+site_url: https://uspenie-hram.org
+display_url: https://uspenie-hram.org
+logo_url: https://uspenie-hram.org/images/logo.png
+locale: ru
+
+collections:
+  - name: news
+    label: Новости
+    label_singular: Новость
+    folder: src/content/news
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{date}} — {{title}}"
+    fields:
+      - { label: Заголовок, name: title, widget: string }
+      - label: Дата
+        name: date
+        widget: datetime
+        format: YYYY-MM-DD
+        date_format: DD.MM.YYYY
+        time_format: false
+      - { label: Главное фото, name: image, widget: image, required: false, hint: "Показывается сразу под заголовком." }
+      - label: Фотогалерея (доп. фото)
+        name: gallery
+        widget: list
+        required: false
+        hint: "Остальные фото новости. Если пусто — галереи не будет."
+        field: { label: Фото, name: image, widget: image }
+      - { label: Краткое описание, name: excerpt, widget: string, required: false }
+      - { label: Текст новости, name: body, widget: markdown }
+
+  - name: settings
+    label: Настройки сайта
+    editor:
+      preview: false
+    files:
+      - name: site
+        label: Контакты и общее
+        file: src/data/site.json
+        fields:
+          - { label: Название, name: name, widget: string }
+          - { label: Местоположение, name: location, widget: string }
+          - { label: Подпись (благочиние / епархия), name: creed, widget: string }
+          - { label: Телефон (для показа), name: phone, widget: string }
+          - { label: Телефон (для ссылок, формат +7…), name: phone_raw, widget: string }
+          - { label: Email, name: email, widget: string }
+          - { label: Адрес, name: address, widget: string }
+          - { label: Заголовок «часы работы», name: hours, widget: string }
+          - { label: Часы работы (время), name: hours_time, widget: string }
+          - label: Соцсети
+            name: social
+            widget: list
+            fields:
+              - { label: Название, name: label, widget: string }
+              - { label: Ссылка, name: url, widget: string }
+          - label: Ближайшее богослужение
+            name: nextService
+            widget: object
+            fields:
+              - { label: Подпись, name: label, widget: string }
+              - { label: Время, name: time, widget: string }
+              - { label: Название службы, name: name, widget: string }
+          - { label: Объявление, name: announcement, widget: text, required: false }
+
+      - name: schedule
+        label: Расписание богослужений
+        file: src/data/schedule.json
+        fields:
+          - label: Расписание на неделю
+            name: weekly
+            widget: list
+            fields:
+              - { label: День, name: day, widget: string }
+              - label: Службы
+                name: services
+                widget: list
+                fields:
+                  - { label: Время, name: time, widget: string }
+                  - { label: Название службы, name: name, widget: string }
+          - { label: Примечание, name: note, widget: text }

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://uspenie-hram.org/sitemap-index.xml
